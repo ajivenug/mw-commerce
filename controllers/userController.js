@@ -2,7 +2,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt")
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
@@ -49,6 +49,41 @@ const loginUser = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Email or Password not valid!");
     }
+});
+
+
+const getUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId);
+    if (user) {
+        res.status(200).json({
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+            profileData: user.profileData ? user.profileData : {}
+        });
+    }
+});
+
+
+const updateUser = asyncHandler(async (req, res) => {
+    const existingUser = await User.findById(req.params.userId);
+    if (!existingUser) {
+        res.status(400);
+        throw new Error("User Not Found!");
+    }
+    const { password } = req.body;
+    if (!password) {
+        res.status(400);
+        throw new Error("Password can't be modified!");
+    }
+    const updateUser = await User.findByIdAndUpdate(
+        req.params.userId,
+        req.body,
+        {
+            new: true
+        }
+    )
+    res.status(200).json(updateUser)
 })
 
-module.exports = { registerUser ,loginUser}
+module.exports = { registerUser, loginUser, getUserProfile, updateUser }

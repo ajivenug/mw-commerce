@@ -16,10 +16,14 @@ const userSchema = mongoose.Schema({
     password: {
         type: String
     },
+
+    profileData: {
+        type: String
+    }
 },
     {
         timestamps: true
     }
 );
 
-module.exports=mongoose.model("User",userSchema)
+module.exports = mongoose.model("User", userSchema)
