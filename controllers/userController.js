@@ -72,7 +72,7 @@ const updateUser = asyncHandler(async (req, res) => {
         throw new Error("User Not Found!");
     }
     const { password } = req.body;
-    if (!password) {
+    if (password) {
         res.status(400);
         throw new Error("Password can't be modified!");
     }
@@ -84,6 +84,68 @@ const updateUser = asyncHandler(async (req, res) => {
         }
     )
     res.status(200).json(updateUser)
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const existingUser = await User.findById(req.params.userId);
+    if (!existingUser) {
+        res.status(400);
+        throw new Error("User Not Found!");
+    }
+    await User.findByIdAndDelete(
+        req.params.userId
+
+    )
+    res.status(200).json({ title: "Success", message: "User deleted successfully!!" })
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+    const existingUser = await User.findById(req.params.userId);
+    if (!existingUser) {
+        res.status(400);
+        throw new Error("User Not Found!");
+    }
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+        res.status(400);
+        throw new Error("Password is mandatory!");
+    }
+    if (oldPassword === newPassword) {
+        res.status(400);
+        throw new Error("Old password and new password can't be the same!");
+    }
+    if (await bcrypt.compare(oldPassword, existingUser.password)) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.findByIdAndUpdate(
+            req.params.userId,
+            { password: hashedPassword },
+            {
+                new: true
+            }
+        );
+        res.status(200).json({ title: "Success", message: "password updated successfully!!" })
+    } else {
+        res.status(403);
+        throw new Error("Incorrect password!");
+    }
+});
+
+const verifyToken = asyncHandler(async (req, res) => {
+    res.status(200).json(req.user);
+});
+
+const checkUserRole = asyncHandler(async (req, res) => {
+    if (req.user.username === "admin") {
+        res.status(200).json({ userRole: "admin" });
+    } else {
+        res.status(200).json({ userRole: "nonadminuser" });
+    }
 })
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUser }
+
+
+
+
+
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUser, deleteUser, changePassword, verifyToken, checkUserRole }
