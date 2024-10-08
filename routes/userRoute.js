@@ -10,7 +10,6 @@ router.post("/login",userController.loginUser);
 router.get("/:userId",validateToken,userController.getUserProfile);
 router.put("/:userId",validateToken,userController.updateUser);
 router.delete("/:userId",validateToken,userController.deleteUser);
-router.delete("/:userId",validateToken,userController.deleteUser);
 router.put("/:userId/password",validateToken,userController.changePassword);
 router.post("/verifyToken",validateToken,userController.verifyToken);
 router.post("/checkUserRole",validateToken,userController.checkUserRole);
