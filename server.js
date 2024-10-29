@@ -17,6 +17,8 @@ app.use(express.json());
 app.use("/api/users",require("./routes/userRoute"));
 app.use("/api/products",require("./routes/productRoute"));
 app.use("/api/orders",require("./routes/orderRoute"));
+app.use("/api/payment",require("./routes/paymentRoute"));
+app.use("/api/cart",require("./routes/cartRoute"));
 app.use(errorHandler);
 
 
